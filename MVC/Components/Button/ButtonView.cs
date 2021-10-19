@@ -1,19 +1,18 @@
-﻿using MVC.Controllers;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Linq;
 
 namespace MVC.Components.Button
 {
-    public class ButtonView : ViewBase<ButtonModel>, IFocusableView<ButtonModel>
+    public class ButtonView : ControllableViewBase<ButtonModel>, IFocusableView<ButtonModel>
     {
         public ButtonView(ButtonModel model, IController<ButtonModel> controller) : base(model, controller)
         {
            
         }
 
-        public override int Height { get; set; } = 5;
-        public override int Width { get; set; } = 10;
+        public override int Height { get; set; } = 4;
+        public override int Width { get; set; } = 20;
 
         public void OnFocusIn()
         {

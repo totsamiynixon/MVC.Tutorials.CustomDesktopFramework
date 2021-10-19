@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace MVC.Components.TextInput
 {
-    public class TextInputView : ViewBase<TextInputModel>, IFocusableView<TextInputModel>
+    public class TextInputView : ControllableViewBase<TextInputModel>, IFocusableView<TextInputModel>
     {
         public TextInputView(TextInputModel model, IController<TextInputModel> controller) : base(model, controller)
         {
@@ -12,7 +12,7 @@ namespace MVC.Components.TextInput
 
         public override int Height { get; set; } = 4;
 
-        public override int Width { get; set; } = 30;
+        public override int Width { get; set; } = 50;
 
         public void OnFocusIn()
         {

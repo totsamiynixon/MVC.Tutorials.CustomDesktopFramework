@@ -1,5 +1,8 @@
-﻿using MVC.Models;
+﻿using MVC.Core;
+using MVC.Core.System;
+using MVC.Core.System.Control.Driver;
 using MVC.Sample;
+using MVC.Sample.UserInfoForm;
 using System;
 
 namespace MVC
@@ -8,35 +11,46 @@ namespace MVC
     {
         public static SystemController CurrentController { get; }
 
-        static void Mainv2(string[] args)
+/*        static void Mainv2(string[] args)
         {
             var fakeApiPage = new NameRandomizer();
 
 
-            var noModel = new NoModel();
-            SystemController systemController = new SystemController(noModel);
+            SystemController systemController = new SystemController();
             systemController.RootView = fakeApiPage.View;
+            systemController.Drivers.Add(new KeyboardControlDriver());
+            systemController.Handlers.Add(new SystemKeyboardControlHandler());
 
             fakeApiPage.Initialize();
             systemController.Initialize();
-
-            ControlDriver.ListenForInput();
         }
 
-        static void Main(string[] args)
+        static void Mainv3(string[] args)
         {
 
             var userInfoForm = new UserInfoForm();
 
 
-            var noModel = new NoModel();
-            SystemController systemController = new SystemController(noModel);
+            SystemController systemController = new SystemController();
             systemController.RootView = userInfoForm.View;
+            systemController.Drivers.Add(new KeyboardControlDriver());
+            systemController.Handlers.Add(new SystemKeyboardControlHandler());
 
             userInfoForm.Initialize();
             systemController.Initialize();
 
-            ControlDriver.ListenForInput();
+        }*/
+
+        static void Main(string[] args)
+        {
+
+            SystemController systemController = new SystemController();
+            systemController.RootView = UserInfoFactory.Create();
+            systemController.Drivers.Add(new KeyboardControlDriver());
+            systemController.Handlers.Add(new SystemKeyboardControlHandler());
+
+            systemController.Initialize();
+
         }
     }
 }

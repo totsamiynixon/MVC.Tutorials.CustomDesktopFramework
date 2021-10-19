@@ -1,28 +1,32 @@
-﻿using System;
+﻿using MVC.Core;
+using MVC.Core.System.Control;
+using System;
 
 namespace MVC.Components.Button
 {
-    public class ButtonController : ControllerBase<ButtonModel>
+    public class ButtonController : IControlHandlingController<ButtonModel>
     {
+        public ButtonModel Model { get; protected set; }
 
-        public ButtonController(ButtonModel model) : base(model)
+        public ButtonController(ButtonModel model)
         {
+            Model = model;
         }
 
 
-        public override void HandleControl(ControlEvent controlEvent)
+        public void HandleControl(IControlContext controlContext)
         {
-            if (controlEvent.Type == EventType.Keyboard && controlEvent.Payload is ConsoleKeyInfo keyInfo)
+            if (controlContext is KeyboardControlContext keyboardControlContext)
             {
-                if (keyInfo.Modifiers.HasFlag(ConsoleModifiers.Control))
+                if (keyboardControlContext.KeyInfo.Modifiers.HasFlag(ConsoleModifiers.Control))
                 {
                     return;
                 }
 
-                if (keyInfo.Key == ConsoleKey.Enter)
+                if (keyboardControlContext.KeyInfo.Key == ConsoleKey.Enter)
                 {
                     Model.TriggerSubmit();
-                    controlEvent.Handled = true;
+                    controlContext.Handled = true;
                     return;
                 }
             }

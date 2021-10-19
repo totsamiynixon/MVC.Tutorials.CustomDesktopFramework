@@ -5,47 +5,28 @@ using MVC.Components.Panel;
 using MVC.Components.TextInput;
 using MVC.Core.System;
 
-namespace MVC.Sample
+namespace MVC.Sample.UserInfoForm
 {
-    public class UserInfoForm
+    public static class UserInfoFactory
     {
-        private readonly FormView _formView;
-        private readonly LabelView _labelView;
-        private readonly PanelView _panelView;
-        public UserInfoForm()
+        public static UserInfoView Create()
         {
             var panelView = CreatePanelView();
+            var titleLabel = CreateLabelView("User info form");
+            var descriptionLabel = CreateLabelView("Press CTRL + SHIFT + S to save progress");
             var formView = CreateFormView();
-            var labelView = CreateLabelView();
+            var resultLabel = CreateLabelView(string.Empty);
 
+            panelView.AddSubView(titleLabel);
+            panelView.AddSubView(descriptionLabel, 0);
             panelView.AddSubView(formView);
-            panelView.AddSubView(labelView);
+            panelView.AddSubView(resultLabel);
 
-            _formView = formView;
-            _labelView = labelView;
-            _panelView = panelView;
-        }
+            var userInfoModel = new UserInfoModel();
+            var userInfoController = new UserInfoController(userInfoModel, formView.Model, resultLabel.Model);
+            var userInfoView = new UserInfoView(userInfoModel, userInfoController, panelView);
 
-        public ICompositeView<IModel> View => _panelView;
-
-        public void Initialize()
-        {
-            //_formView.Model.Initialize();
-            _formView.Model.OnSubmit += HandleFormSubmit;
-        }
-
-        public void Destroy()
-        {
-            _formView.Model.OnSubmit -= HandleFormSubmit;
-           // _formView.Model.Destroy();
-        }
-
-        private void HandleFormSubmit(object sender)
-        {
-            _labelView.Model.Text = string.Join(", ", _formView.Model.Fields.Values);
-
-            // Domain interaction here
-            // For example - http request
+            return userInfoView;
         }
 
         private static PanelView CreatePanelView()
@@ -63,11 +44,12 @@ namespace MVC.Sample
             var submitButton = CreateButtonView("Submit");
 
             var formModel = new FormModel();
-            formModel.AddInput("firstName", firstNameInput.Model);
-            formModel.AddInput("lastName", lastNameInput.Model);
-            formModel.SetSubmitButton(submitButton.Model);
+            var formController = new FormController(formModel);
+            formController.AddInput(nameof(UserInfoModel.FirstName), firstNameInput.Model);
+            formController.AddInput(nameof(UserInfoModel.LastName), lastNameInput.Model);
+            formController.SetSubmitButton(submitButton.Model);
 
-            var formView = new FormView(formModel);
+            var formView = new FormView(formModel, formController);
             formView.AddInput(firstNameInput);
             formView.AddInput(lastNameInput);
             formView.AddSubmitButton(submitButton);
@@ -96,9 +78,9 @@ namespace MVC.Sample
             return buttonView;
         }
 
-        private static LabelView CreateLabelView()
+        private static LabelView CreateLabelView(string text)
         {
-            var labelModel = new LabelModel(string.Empty);
+            var labelModel = new LabelModel(text);
             var labelView = new LabelView(labelModel);
 
             return labelView;

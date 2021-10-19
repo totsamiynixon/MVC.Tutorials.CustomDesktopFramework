@@ -6,13 +6,13 @@ namespace MVC.Components.Label
 {
     public class LabelView : ViewBase<LabelModel>
     {
-        public LabelView(LabelModel model, IController<LabelModel> controller) : base(model, controller)
+        public LabelView(LabelModel model) : base(model)
         {
            
         }
 
-        public override int Height { get; set; } = 5;
-        public override int Width { get; set; } = 20;
+        public override int Height { get; set; } = 1;
+        public override int Width { get; set; } = 100;
 
         protected override void Render()
         {

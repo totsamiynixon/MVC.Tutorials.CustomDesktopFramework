@@ -1,7 +1,7 @@
 ﻿using MVC.Components.Button;
 using MVC.Components.Label;
 using MVC.Components.Panel;
-using MVC.Controllers;
+using MVC.Core.System;
 using Newtonsoft.Json.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -64,9 +64,8 @@ namespace MVC.Sample
 
         private static PanelView CreatePanelView()
         {
-            var panelModel = new PanelModel();
-            var panelController = new NoController<PanelModel>(panelModel);
-            var panelView = new PanelView(panelModel, panelController);
+            var panelModel = new NoModel();
+            var panelView = new PanelView(panelModel);
 
             return panelView;
         }
@@ -83,7 +82,7 @@ namespace MVC.Sample
         private static LabelView CreateLabelView()
         {
             var labelModel = new LabelModel(string.Empty);
-            var labelView = new LabelView(labelModel, new NoController<LabelModel>(labelModel));
+            var labelView = new LabelView(labelModel);
 
             return labelView;
         }

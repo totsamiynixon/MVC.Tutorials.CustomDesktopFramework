@@ -7,10 +7,13 @@ using System.Linq;
 
 namespace MVC.Components.Form
 {
-    public class FormView : CompositeView<FormModel>
+    public class FormView : CompositeViewBase<FormModel>, IControllableView<FormModel>
     {
-        public FormView(FormModel model, IController<FormModel> controller) : base(model, controller)
+        public IController<FormModel> Controller { get; }
+
+        public FormView(FormModel model, IController<FormModel> controller) : base(model)
         {
+            Controller = controller;
         }
 
         public override int Height { get; set; } = 30;
@@ -50,16 +53,6 @@ namespace MVC.Components.Form
             var yOffset = lastEntry.Slot.Y == 0 ? 2 : lastEntry.Slot.Y + 6;
 
             base.AddSubView(view, 2, yOffset);
-        }
-
-        public override void OnFocusIn()
-        {
-            
-        }
-
-        public override void OnFocusOut()
-        {
-       
         }
 
         protected override void PropertyChanged(object sender, PropertyChangedEventArgs e)

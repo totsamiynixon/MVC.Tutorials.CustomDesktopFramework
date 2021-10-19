@@ -1,127 +1,157 @@
-﻿using MVC.Models;
-using System;
+﻿using MVC.Components.Composite;
+using MVC.Core;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace MVC
 {
 
-    public class SystemController : ControllerBase<NoModel>
+    public class SystemController
     {
         public ICompositeView<IModel> RootView { get; set; }
 
         public IView<IModel> CurrentView { get; set; }
 
-        public SystemController(NoModel model) : base(model)
-        {
-        }
+        public List<IControlDriver> Drivers { get; set; } = new List<IControlDriver>();
 
-        public override void HandleControl(ControlEvent controlEvent)
-        {
-            TryHandleControl(CurrentView, controlEvent);
-
-            if (controlEvent.Handled)
-            {
-                return;
-            }
-
-            controlEvent.Handled = true;
-
-
-            if (controlEvent.Type == EventType.Keyboard)
-            {
-                if (CurrentView is IFocusableView<IModel> focusableView)
-                {
-                    focusableView.OnFocusOut();
-                }
-
-                if (controlEvent.Type == EventType.Keyboard && controlEvent.Payload is ConsoleKeyInfo keyInfo)
-                {
-                    if (keyInfo.Key == ConsoleKey.Spacebar && keyInfo.Modifiers.HasFlag(ConsoleModifiers.Control))
-                    {
-                        if (CurrentView is ICompositeView<IModel> compositeView)
-                        {
-                            CurrentView = compositeView.Children.OfType<IFocusableView<IModel>>().First();
-                        }
-                    }
-                    else if (keyInfo.Key == ConsoleKey.Tab && keyInfo.Modifiers.HasFlag(ConsoleModifiers.Control | ConsoleModifiers.Shift))
-                    {
-                        CurrentView = CurrentView.Parent;
-
-                        if (CurrentView == null)
-                        {
-                            CurrentView = RootView;
-                        }
-                    }
-                    else if (keyInfo.Key == ConsoleKey.Tab && keyInfo.Modifiers.HasFlag(ConsoleModifiers.Control))
-                    {
-                        if (CurrentView.Parent is ICompositeView<IModel> parentCompositeView)
-                        {
-                            var currentViewNode = parentCompositeView.Children.Find(CurrentView);
-                            CurrentView = GetFirstFocusableView(currentViewNode) ?? parentCompositeView.Children.OfType<IFocusableView<IModel>>().First();
-                        }
-
-                    }
-                }
-
-                if (CurrentView is IFocusableView<IModel> newFocusableView)
-                {
-                    newFocusableView.OnFocusIn();
-                }
-            }
-        }
+        public List<ISystemControlHandler> Handlers { get; set; } = new List<ISystemControlHandler>();
 
         public void Initialize()
         {
-            ControlDriver.OnControl += HandleDriverControl;
+            foreach (var controlDriver in Drivers)
+            {
+                controlDriver.Initialize();
+                controlDriver.OnControl += HandleControl;
+            }
 
             CurrentView = RootView;
-            CurrentView.Initialize();
 
-            if (CurrentView is IFocusableView<IModel> focusableView)
-            {
-                focusableView.OnFocusIn();
-            }
+            TryCascadeInit(CurrentView);
+            SetupInitialFocus(CurrentView);
         }
 
         public void Destroy()
         {
-            ControlDriver.OnControl -= HandleDriverControl;
-
-            RootView.Destroy();
-        }
-
-        private void HandleDriverControl(ControlEvent controlEvent)
-        {
-            this.HandleControl(controlEvent);
-        }
-
-        private void TryHandleControl(IView<IModel> view, ControlEvent controlEvent)
-        {
-            view.Controller.HandleControl(controlEvent);
-
-            if (controlEvent.Handled == false)
+            foreach (var controlDriver in Drivers)
             {
-                if (view.Parent != null)
+                controlDriver.OnControl -= HandleControl;
+                controlDriver.Destroy();
+            }
+
+            TryCascadeDestroy(CurrentView);
+        }
+
+        protected virtual void HandleControl(IControlContext controlContext)
+        {
+            TryHandleControl(CurrentView, controlContext);
+
+            if (CurrentView is IFocusableView<IModel> focusableView)
+            {
+                focusableView.OnFocusOut();
+            }
+
+            if (controlContext.Handled == false)
+            {
+                foreach (var rootController in Handlers)
                 {
-                    TryHandleControl(view.Parent, controlEvent);
+                    rootController.HandleControl(this, controlContext);
+
+                    if (controlContext.Handled)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            if (CurrentView is IFocusableView<IModel> newFocusableView)
+            {
+                newFocusableView.OnFocusIn();
+            }
+        }
+
+        private void SetupInitialFocus(IView<IModel> view)
+        {
+            if (view is IFocusableView<IModel> focusableView)
+            {
+                focusableView.OnFocusIn();
+                return;
+            }
+
+            if (view is ICompositeView<IModel> compositeView)
+            {
+                foreach (var child in compositeView.Children)
+                {
+                    SetupInitialFocus(child);
                 }
             }
         }
 
-        private IView<IModel> GetFirstFocusableView(LinkedListNode<IView<IModel>> node)
+        private void TryCascadeInit(IView<IModel> view)
         {
-            if(node.Next == null)
+
+            if (view is IControllableView<IModel> controllableView)
             {
-                return null;
+                if (controllableView.Controller is IInitializableController<IModel> initializableController)
+                {
+                    initializableController.Initialize();
+                }
             }
 
-            if(node.Next.Value is IFocusableView<IModel>)
+            if (view is IInitializableView<IModel> initializableView)
             {
-                return node.Next.Value;
+                initializableView.Initialize();
             }
 
-            return GetFirstFocusableView(node.Next);
+            if (view is ICompositeView<IModel> compositeView)
+            {
+                foreach (var child in compositeView.Children)
+                {
+                    TryCascadeInit(child);
+                }
+            }
+        }
+
+        private void TryCascadeDestroy(IView<IModel> view)
+        {
+            if (view is ICompositeView<IModel> compositeView)
+            {
+                foreach (var child in compositeView.Children)
+                {
+                    TryCascadeDestroy(child);
+                }
+            }
+
+            if (view is IInitializableView<IModel> initializableView)
+            {
+                initializableView.Initialize();
+            }
+
+            if (view is IControllableView<IModel> controllableView)
+            {
+                if (controllableView.Controller is IInitializableController<IModel> initializableController)
+                {
+                    initializableController.Initialize();
+                }
+            }
+        }
+
+        private void TryHandleControl(IView<IModel> view, IControlContext controlContext)
+        {
+
+            if (view is IControllableView<IModel> controllableView)
+            {
+                if (controllableView.Controller is IControlHandlingController<IModel> controlHandlingController)
+                {
+                    controlHandlingController.HandleControl(controlContext);
+                }
+            }
+
+            if (controlContext.Handled == false)
+            {
+                if (view.Parent != null)
+                {
+                    TryHandleControl(view.Parent, controlContext);
+                }
+            }
         }
     }
 }

@@ -1,12 +1,13 @@
 ﻿using MVC.Components.Composite;
+using MVC.Core.System;
 using System;
 using System.Linq;
 
 namespace MVC.Components.Panel
 {
-    public class PanelView : CompositeView<PanelModel>
+    public class PanelView : CompositeViewBase<NoModel>, IFocusableView<NoModel>
     {
-        public PanelView(PanelModel model, IController<PanelModel> controller) : base(model, controller)
+        public PanelView(NoModel model) : base(model)
         {
         }
 
@@ -33,22 +34,22 @@ namespace MVC.Components.Panel
             base.Render();
         }
 
-        public void AddSubView<TView>(TView view) where TView : IView<IModel>
+        public void AddSubView<TView>(TView view, int marginTop = 2) where TView : IView<IModel>
         {
             var lastEntry = ViewEntries.LastOrDefault();
-            var yOffset = lastEntry.View == null ? 4 : lastEntry.Slot.Y + lastEntry.View.Height + 4;
+            var yOffset = lastEntry.View == null ? marginTop : lastEntry.Slot.Y + lastEntry.View.Height + marginTop;
 
             base.AddSubView(view, 4, yOffset);
         }
 
-        public override void OnFocusIn()
+        public void OnFocusIn()
         {
             Console.BackgroundColor = ConsoleColor.DarkGray;
             Render();
             Console.ResetColor();
         }
 
-        public override void OnFocusOut()
+        public void OnFocusOut()
         {
             Render();
         }

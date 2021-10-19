@@ -4,9 +4,9 @@ using System.Linq;
 
 namespace MVC.Components.Composite
 {
-    public abstract class CompositeView<TModel> : ViewBase<TModel>, ICompositeView<TModel>, IFocusableView<TModel> where TModel : IModel
+    public abstract class CompositeViewBase<TModel> : ViewBase<TModel>, ICompositeView<TModel> where TModel : IModel 
     {
-        protected CompositeView(TModel model, IController<TModel> controller) : base(model, controller)
+        protected CompositeViewBase(TModel model) : base(model)
         {
         }
 
@@ -23,14 +23,9 @@ namespace MVC.Components.Composite
             {
                 viewEntry.View.X = viewEntry.Slot.X + this.X;
                 viewEntry.View.Y = viewEntry.Slot.Y + this.Y;
-                viewEntry.View.Parent = (IView<IModel>)this;
-                viewEntry.View.Initialize();
+                viewEntry.View.Parent = (ICompositeView<IModel>)this;
             }
         }
-
-        public abstract void OnFocusIn();
-
-        public abstract void OnFocusOut();
 
         public override void Destroy()
         {
@@ -38,8 +33,7 @@ namespace MVC.Components.Composite
 
             foreach (var viewEntry in ViewEntries)
             {
-                // some logic to destory entry in coordinates
-                viewEntry.View.Destroy();
+                (viewEntry.View as IInitializableView<IModel>)?.Destroy();
             }
         }
 
