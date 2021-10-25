@@ -6,6 +6,8 @@
 
         public event ControlHandler OnControl;
 
+        public void TryGetControl();
+
         public void Initialize();
 
         public void Destroy();

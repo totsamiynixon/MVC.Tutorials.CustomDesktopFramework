@@ -6,36 +6,31 @@ namespace MVC.Core.System.Control.Driver
 {
     public class KeyboardControlDriver : IControlDriver
     {
-        private Thread thread = null;
-        private bool _isListening = false;
+        private bool _shouldGetControl = false;
 
         public event IControlDriver.ControlHandler OnControl;
 
-        [SecurityPermissionAttribute(SecurityAction.Demand, ControlThread = true)]
         public void Destroy()
         {
-            _isListening = false;
+            _shouldGetControl = false;
         }
 
         public void Initialize()
         {
-            _isListening = true;
+            _shouldGetControl = true;
+        }
 
-            thread = new Thread(() =>
+        public void TryGetControl()
+        {
+            if (_shouldGetControl && Console.KeyAvailable)
             {
-                while (_isListening)
+                var key = Console.ReadKey(true);
+
+                OnControl?.Invoke(new KeyboardControlContext
                 {
-                    var key = Console.ReadKey(true);
-
-                    OnControl(new KeyboardControlContext
-                    {
-                        KeyInfo = key
-                    });
-                }
-            });
-
-            thread.Start();
-
+                    KeyInfo = key
+                });
+            }
         }
     }
 }

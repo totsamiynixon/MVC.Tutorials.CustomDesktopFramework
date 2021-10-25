@@ -1,7 +1,56 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MVC.Core.System
 {
+    public class Looper
+    {
+        private bool _isRunning = false;
+
+        private List<Action> Actions { get; set; } = new List<Action>();
+
+        public void RegisterAction(Action action)
+        {
+            Actions.Add(action);
+        }
+
+        public void UnregisterAction(Action action)
+        {
+            Actions.Remove(action);
+        }
+
+        public void RunActionOnce(Action action)
+        {
+            Action wrapperAction = null;
+            wrapperAction = () =>
+           {
+               action();
+               UnregisterAction(wrapperAction);
+           };
+            RegisterAction(wrapperAction);
+
+        }
+
+        public void Start()
+        {
+            _isRunning = true;
+
+            while (_isRunning)
+            {
+                foreach (var action in Actions.ToList())
+                {
+                    if (_isRunning)
+                        action();
+                }
+            }
+        }
+
+        public void Stop()
+        {
+            _isRunning = false;
+        }
+    }
 
     public class SystemController
     {
@@ -13,24 +62,34 @@ namespace MVC.Core.System
 
         public List<ISystemControlHandler> Handlers { get; set; } = new List<ISystemControlHandler>();
 
+        private Looper Looper { get; set; }
+
         public void Initialize()
         {
+            Looper = new Looper();
+
             foreach (var controlDriver in Drivers)
             {
                 controlDriver.Initialize();
                 controlDriver.OnControl += HandleControl;
+                Looper.RegisterAction(controlDriver.TryGetControl);
             }
 
             TryCascadeInit(RootView);
             CurrentView = SetupInitialFocus(RootView);
+
+            Looper.Start();
         }
 
         public void Destroy()
         {
+            Looper.Stop();
+
             foreach (var controlDriver in Drivers)
             {
                 controlDriver.OnControl -= HandleControl;
                 controlDriver.Destroy();
+                Looper.UnregisterAction(controlDriver.TryGetControl);
             }
 
             TryCascadeDestroy(CurrentView);
