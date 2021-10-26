@@ -1,21 +1,21 @@
 ﻿using MVC.Components.Button;
 using MVC.Components.TextInput;
+using MVC.Core;
+using MVC.Core.System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace MVC.Components.Form
 {
-    public class FormController : IInitializableController<FormModel>
+    public class FormController : NoControllController<FormModel>, IInitializableController<FormModel>
     {
-        public FormModel Model { get; }
-
         public ButtonModel SubmitButtonModel { get; private set; }
 
         private Dictionary<string, TextInputModel> PropertyModelMap { get; set; } = new Dictionary<string, TextInputModel>();
 
         private Dictionary<string, PropertyChangedEventHandler> PropertyChangedEventHandlers { get; set; } = new Dictionary<string, PropertyChangedEventHandler>();
 
-        public FormController(FormModel model)
+        public FormController(FormModel model) : base(model)
         {
             Model = model;
         }
@@ -83,6 +83,5 @@ namespace MVC.Components.Form
         {
             Model.DispatchSubmit();
         }
-
     }
 }

@@ -4,9 +4,9 @@ using System.Linq;
 
 namespace MVC.Core.System.Composite
 {
-    public abstract class CompositeViewBase<TModel> : ViewBase<TModel>, ICompositeView<TModel> where TModel : IModel 
+    public abstract class CompositeViewBase<TModel> : ViewBase<TModel>, ICompositeView<TModel> where TModel : IModel
     {
-        protected CompositeViewBase(TModel model) : base(model)
+        public CompositeViewBase(TModel model, IController<TModel> controller) : base(model, controller)
         {
         }
 

@@ -5,9 +5,14 @@ using System.Linq;
 
 namespace MVC.Components.Button
 {
-    public class ButtonView : ControllableViewBase<ButtonModel>, IFocusableView<ButtonModel>
+    public class ButtonView : ViewBase<ButtonModel>, IFocusableView<ButtonModel>
     {
-        public ButtonView(ButtonModel model, IController<ButtonModel> controller) : base(model, controller)
+        public ButtonView(ButtonModel model) : base(model, new ButtonController(model))
+        {
+
+        }
+
+        public ButtonView(ButtonModel model, ButtonController controller) : base(model, controller)
         {
            
         }

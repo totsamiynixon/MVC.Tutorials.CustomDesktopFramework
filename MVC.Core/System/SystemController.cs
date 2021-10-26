@@ -151,12 +151,9 @@ namespace MVC.Core.System
         private void TryCascadeInit(IView<IModel> view)
         {
 
-            if (view is IControllableView<IModel> controllableView)
+            if (view.Controller is IInitializableController<IModel> initializableController)
             {
-                if (controllableView.Controller is IInitializableController<IModel> initializableController)
-                {
-                    initializableController.Initialize();
-                }
+                initializableController.Initialize();
             }
 
             if (view is IInitializableView<IModel> initializableView)
@@ -188,25 +185,16 @@ namespace MVC.Core.System
                 initializableView.Destroy();
             }
 
-            if (view is IControllableView<IModel> controllableView)
+            if (view.Controller is IInitializableController<IModel> initializableController)
             {
-                if (controllableView.Controller is IInitializableController<IModel> initializableController)
-                {
-                    initializableController.Destroy();
-                }
+                initializableController.Destroy();
             }
         }
 
         private void TryHandleControl(IView<IModel> view, IControlContext controlContext)
         {
 
-            if (view is IControllableView<IModel> controllableView)
-            {
-                if (controllableView.Controller is IControlHandlingController<IModel> controlHandlingController)
-                {
-                    controlHandlingController.HandleControl(controlContext);
-                }
-            }
+            view.Controller.HandleControl(controlContext);
 
             if (controlContext.Handled == false)
             {

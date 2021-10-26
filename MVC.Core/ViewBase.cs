@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MVC.Core.System;
+using System;
 using System.ComponentModel;
 
 namespace MVC.Core
@@ -6,9 +7,12 @@ namespace MVC.Core
 
     public abstract class ViewBase<TModel> : IView<TModel>, IInitializableView<TModel> where TModel : IModel
     {
-        public ICompositeView<IModel> Parent { get; set; }
 
         public TModel Model { get; protected set; }
+
+        public IController<TModel> Controller { get; protected set; }
+
+        public ICompositeView<IModel> Parent { get; set; }
 
         public int X { get; set; }
 
@@ -18,10 +22,10 @@ namespace MVC.Core
 
         public abstract int Width { get; set; }
 
-
-        public ViewBase(TModel model)
+        public ViewBase(TModel model, IController<TModel> controller)
         {
             this.Model = model;
+            this.Controller = controller;
         }
 
         public event OnRenderHandler OnRender;
@@ -58,16 +62,6 @@ namespace MVC.Core
         protected virtual void PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             Render();
-        }
-    }
-
-    public abstract class ControllableViewBase<TModel> : ViewBase<TModel>, IControllableView<TModel> where TModel : IModel
-    {
-        public IController<TModel> Controller { get; }
-
-        public ControllableViewBase(TModel model, IController<TModel> controller) : base(model)
-        {
-            Controller = controller;
         }
     }
 }

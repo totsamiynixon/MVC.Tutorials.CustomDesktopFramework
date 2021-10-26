@@ -3,7 +3,6 @@ using MVC.Components.Form;
 using MVC.Components.Label;
 using MVC.Components.Panel;
 using MVC.Components.TextInput;
-using MVC.Core.System;
 using MVC.EditUserInfoForm.Application;
 using MVC.EditUserInfoForm.Domain;
 
@@ -33,8 +32,7 @@ namespace MVC.EditUserInfoForm
 
         private static PanelView CreatePanelView()
         {
-            var panelModel = new NoModel();
-            var panelView = new PanelView(panelModel);
+            var panelView = new PanelView();
             panelView.Height = 32;
 
             return panelView;

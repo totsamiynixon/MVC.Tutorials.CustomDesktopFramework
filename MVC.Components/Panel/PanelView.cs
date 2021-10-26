@@ -7,10 +7,9 @@ namespace MVC.Components.Panel
 {
     public class PanelView : CompositeViewBase<NoModel>
     {
-        public PanelView(NoModel model) : base(model)
+        public PanelView() : base(new NoModel(), new NoControllController<NoModel>(new NoModel()))
         {
         }
-
         public override int Height { get; set; } = 40;
 
         public override int Width { get; set; } = 115;

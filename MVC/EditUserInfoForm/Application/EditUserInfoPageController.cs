@@ -7,7 +7,7 @@ using System.ComponentModel;
 
 namespace MVC.EditUserInfoForm.Application
 {
-    public class EditUserInfoPageController : IInitializableController<EditUserInfoPageModel>, IControlHandlingController<EditUserInfoPageModel>
+    public class EditUserInfoPageController : IInitializableController<EditUserInfoPageModel>
     {
         public EditUserInfoPageModel Model { get; protected set; }
         public FormModel FormModel { get; }

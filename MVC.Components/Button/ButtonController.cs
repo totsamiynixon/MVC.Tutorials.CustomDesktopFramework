@@ -4,7 +4,7 @@ using System;
 
 namespace MVC.Components.Button
 {
-    public class ButtonController : IControlHandlingController<ButtonModel>
+    public class ButtonController : IController<ButtonModel>
     {
         public ButtonModel Model { get; protected set; }
 

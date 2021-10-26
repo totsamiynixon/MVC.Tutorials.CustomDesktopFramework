@@ -4,7 +4,7 @@ using System;
 
 namespace MVC.Components.TextInput
 {
-    public class TextInputController : IControlHandlingController<TextInputModel>
+    public class TextInputController : IController<TextInputModel>
     {
         public TextInputModel Model { get; protected set; }
 

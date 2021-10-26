@@ -7,11 +7,11 @@ using System.Linq;
 
 namespace MVC.Components.Form
 {
-    public class FormView : CompositeViewBase<FormModel>, IControllableView<FormModel>
+    public class FormView : CompositeViewBase<FormModel>
     {
-        public IController<FormModel> Controller { get; }
+        public FormView(FormModel model) : base(model, new FormController(model)) { }
 
-        public FormView(FormModel model, IController<FormModel> controller) : base(model)
+        public FormView(FormModel model, IController<FormModel> controller) : base(model, controller)
         {
             Controller = controller;
         }

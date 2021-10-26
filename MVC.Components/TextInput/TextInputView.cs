@@ -5,11 +5,10 @@ using System.Linq;
 
 namespace MVC.Components.TextInput
 {
-    public class TextInputView : ControllableViewBase<TextInputModel>, IFocusableView<TextInputModel>
+    public class TextInputView : ViewBase<TextInputModel>, IFocusableView<TextInputModel>
     {
-        public TextInputView(TextInputModel model, IController<TextInputModel> controller) : base(model, controller)
-        {
-        }
+        public TextInputView(TextInputModel model) : base(model, new TextInputController(model)) { }
+        public TextInputView(TextInputModel model, TextInputController controller) : base(model, controller) { }
 
         public override int Height { get; set; } = 4;
 

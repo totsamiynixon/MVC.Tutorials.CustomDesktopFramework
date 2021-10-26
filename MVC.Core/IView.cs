@@ -9,6 +9,8 @@ namespace MVC
     {
         public TModel Model { get; }
 
+        public IController<TModel> Controller { get; }
+
         public ICompositeView<IModel> Parent { get; set; }
 
         public event OnRenderHandler OnRender;
