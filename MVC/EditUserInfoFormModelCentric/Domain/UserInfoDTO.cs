@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MVC.EditUserInfoForm.Domain
+namespace MVC.EditUserInfoFormModelCentric.Domain
 {
     public class UserInfoDTO
     {

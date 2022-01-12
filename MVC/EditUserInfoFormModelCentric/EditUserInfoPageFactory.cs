@@ -3,10 +3,10 @@ using MVC.Components.Form;
 using MVC.Components.Label;
 using MVC.Components.Panel;
 using MVC.Components.TextInput;
-using MVC.EditUserInfoForm.Application;
-using MVC.EditUserInfoForm.Domain;
+using MVC.EditUserInfoFormControllerCentric.Application;
+using MVC.EditUserInfoFormControllerCentric.Domain;
 
-namespace MVC.EditUserInfoForm
+namespace MVC.EditUserInfoFormModelCentric
 {
     public static class EditUserInfoPageFactory
     {

@@ -1,7 +1,7 @@
-﻿using MVC.EditUserInfoForm.Domain;
+﻿using MVC.EditUserInfoFormControllerCentric.Domain;
 using System.ComponentModel;
 
-namespace MVC.EditUserInfoForm.Application
+namespace MVC.EditUserInfoFormControllerCentric.Application
 {
     public class EditUserInfoPageModel : IModel
     {

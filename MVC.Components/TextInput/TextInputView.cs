@@ -46,7 +46,7 @@ namespace MVC.Components.TextInput
             Console.Write(Model.Value);
         }
 
-        protected override void PropertyChanged(object sender, PropertyChangedEventArgs args)
+        protected override void ModelPropertyChanged(object sender, PropertyChangedEventArgs args)
         {
             Render();
         }

@@ -11,16 +11,30 @@ namespace MVC.Components.Label
         public LabelView(LabelModel model) : base(model, new NoControllController<LabelModel>(model)) { }
 
         public override int Height { get; set; } = 1;
-        public override int Width { get; set; } = 100;
+        public override int Width { get; set; } = 50;
+
+        protected Action Cleanup;
 
         protected override void Render()
         {
-            Console.SetCursorPosition(X, Y);
+            Cleanup?.Invoke();
+
+            var x = X;
+            var y = Y;
+
+            Console.SetCursorPosition(x, y);
             Console.Write(string.Concat(Enumerable.Repeat(' ', Width)));
-            Console.SetCursorPosition(X, Y);
+            Console.SetCursorPosition(x, y);
             Console.Write(Width < Model.Text.Length ? Model.Text.Substring(0, Width) : Model.Text);
+
+            Cleanup = () =>
+            {
+                Console.SetCursorPosition(x, y);
+                Console.Write(string.Concat(Enumerable.Repeat(' ', Width)));
+            };
 
             base.Render();
         }
+
     }
 }

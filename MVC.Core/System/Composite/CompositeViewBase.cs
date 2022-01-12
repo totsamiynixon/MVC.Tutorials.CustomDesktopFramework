@@ -21,8 +21,8 @@ namespace MVC.Core.System.Composite
 
             foreach (var viewEntry in ViewEntries)
             {
-                viewEntry.View.X = viewEntry.Slot.X + this.X;
-                viewEntry.View.Y = viewEntry.Slot.Y + this.Y;
+                viewEntry.View.OffsetX = viewEntry.Slot.X;
+                viewEntry.View.OffsetY = viewEntry.Slot.Y;
                 viewEntry.View.Parent = (ICompositeView<IModel>)this;
             }
         }
@@ -37,15 +37,15 @@ namespace MVC.Core.System.Composite
             }
         }
 
-        protected void AddSubView<TView>(TView view, int x, int y) where TView : IView<IModel>
+        protected void AddSubView<TView>(TView view, int offsetX, int offsetY) where TView : IView<IModel>
         {
             ViewEntries.AddLast(new ViewEntry
             {
                 View = view,
                 Slot = new ViewSlot
                 {
-                    X = x,
-                    Y = y
+                    X = offsetX,
+                    Y = offsetY
                 }
             });
         }

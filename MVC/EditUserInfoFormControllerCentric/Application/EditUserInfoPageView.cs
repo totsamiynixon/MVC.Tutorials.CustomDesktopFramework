@@ -1,7 +1,7 @@
 ﻿using MVC.Components.Panel;
 using MVC.Core.System.Composite;
 
-namespace MVC.EditUserInfoForm.Application
+namespace MVC.EditUserInfoFormControllerCentric.Application
 {
     public class EditUserInfoPageView : CompositeViewBase<EditUserInfoPageModel>
     {

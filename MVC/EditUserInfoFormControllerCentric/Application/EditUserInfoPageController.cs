@@ -5,7 +5,7 @@ using MVC.Core.System.Control;
 using System;
 using System.ComponentModel;
 
-namespace MVC.EditUserInfoForm.Application
+namespace MVC.EditUserInfoFormControllerCentric.Application
 {
     public class EditUserInfoPageController : IInitializableController<EditUserInfoPageModel>
     {

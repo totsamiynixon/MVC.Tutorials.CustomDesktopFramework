@@ -1,4 +1,4 @@
-﻿namespace MVC.EditUserInfoForm.Domain
+﻿namespace MVC.EditUserInfoFormControllerCentric.Domain
 {
     public class UserInfoService
     {

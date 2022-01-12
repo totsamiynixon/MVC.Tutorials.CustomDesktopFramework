@@ -7,6 +7,12 @@ namespace MVC.Core
 
     public abstract class ViewBase<TModel> : IView<TModel>, IInitializableView<TModel> where TModel : IModel
     {
+        private bool _isInitialized;
+
+        private int _height;
+        private int _width;
+        private int _offsetX;
+        private int _offsetY;
 
         public TModel Model { get; protected set; }
 
@@ -14,13 +20,33 @@ namespace MVC.Core
 
         public ICompositeView<IModel> Parent { get; set; }
 
-        public int X { get; set; }
+        public int X => (Parent?.X ?? 0) + OffsetX;
 
-        public int Y { get; set; }
+        public int Y => (Parent?.Y ?? 0) + OffsetY;
 
-        public abstract int Height { get; set; }
+        public virtual int Height
+        {
+            get => _height;
+            set { _height = value; OnViewPropertyChanged(nameof(Height)); }
+        }
 
-        public abstract int Width { get; set; }
+        public virtual int Width
+        {
+            get => _width;
+            set { _width = value; OnViewPropertyChanged(nameof(Width)); }
+        }
+
+        public int OffsetX
+        {
+            get => _offsetX;
+            set { _offsetX = value; OnViewPropertyChanged(nameof(OffsetX)); }
+        }
+
+        public int OffsetY
+        {
+            get => _offsetY;
+            set { _offsetY = value; OnViewPropertyChanged(nameof(OffsetY)); }
+        }
 
         public ViewBase(TModel model, IController<TModel> controller)
         {
@@ -33,18 +59,22 @@ namespace MVC.Core
 
         public virtual void Initialize()
         {
-            Model.PropertyChanged += PropertyChanged;
+            Model.PropertyChanged += ModelPropertyChanged;
             if (Parent != null)
                 Parent.OnRender += OnParentRender;
+
+            _isInitialized = true;
 
             Render();
         }
 
         public virtual void Destroy()
         {
-            Model.PropertyChanged -= PropertyChanged;
+            Model.PropertyChanged -= ModelPropertyChanged;
             if (Parent != null)
                 Parent.OnRender -= OnParentRender;
+
+            _isInitialized = false;
         }
 
         protected virtual void Render()
@@ -56,12 +86,17 @@ namespace MVC.Core
 
         protected virtual void OnParentRender(object sender)
         {
-            Render();
+            if (_isInitialized) Render();
         }
 
-        protected virtual void PropertyChanged(object sender, PropertyChangedEventArgs e)
+        protected virtual void ModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            Render();
+            if (_isInitialized) Render();
+        }
+
+        protected virtual void OnViewPropertyChanged(string propertyName)
+        {
+            if (_isInitialized) Render();
         }
     }
 }

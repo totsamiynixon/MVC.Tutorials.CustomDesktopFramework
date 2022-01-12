@@ -55,7 +55,7 @@ namespace MVC.Components.Form
             base.AddSubView(view, 2, yOffset);
         }
 
-        protected override void PropertyChanged(object sender, PropertyChangedEventArgs e)
+        protected override void ModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             Console.CursorVisible = false;
             Console.SetCursorPosition(0, 0);
